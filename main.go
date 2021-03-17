@@ -26,6 +26,7 @@ var SqsConfig=sqsmanager.SqsConfiguration{
 var S3 s3manager.IS3Manager = s3manager.NewS3Manager(S3Config)
 var SQS sqsmanager.ISqsManager=sqsmanager.NewSqsManager(SqsConfig)
 
+//  Generate attribut message for send to sqs message broker
 func GenereateAttributeMessage(Param string, NotificationType string, PhoneNumber int64) map[string]*sqs.MessageAttributeValue {
 	fmt.Println(string(PhoneNumber))
 	MessageAttributes := map[string]*sqs.MessageAttributeValue{
@@ -47,6 +48,9 @@ func GenereateAttributeMessage(Param string, NotificationType string, PhoneNumbe
 }
 func main() {
 
+	// trying library
+
+	//  upload to s3
 	path, err := S3.Upload("/test/", "agustusan.jpg")
 	if err != nil {
 		fmt.Println(err)
@@ -56,14 +60,15 @@ func main() {
 
 	// s3 url
 	// https://koalaprop.s3-ap-southeast-1.amazonaws.com/staging/test/agustusan.jpg
-	// a:=fmt.Sprintf(`/%s/%s`,Config.BasePath,"test/agustusan.jp")
-	// fmt.Println(a)
-	// err := S3.Delete(fmt.Sprintf(`/%s/%s`, Config.BasePath, "test/agustusan.jpg"))
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
+	a:=fmt.Sprintf(`/%s/%s`,S3Config.BasePath,"test/agustusan.jp")
+	fmt.Println(a)
+	err = S3.Delete(fmt.Sprintf(`/%s/%s`, S3Config.BasePath, "test/agustusan.jpg"))
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	
+	// send to sqs
 	Message:=GenereateAttributeMessage("test","whatsapp",6287777000056)
 	err=SQS.SendMessage(Message,"XXXXX-XXXX-QW","https://sqs.ap-southeast-1.amazonaws.com/737690422155/staging_notifcation_services.fifo")
 
